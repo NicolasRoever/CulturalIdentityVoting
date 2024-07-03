@@ -1,36 +1,30 @@
-"""Function(s) for cleaning the data set(s)."""
-
 import pandas as pd
 
 
-def clean_data(data, data_info):
-    """Clean data set.
+def clean_raw_ess_11_data(data):
 
-    Information on data columns is stored in ``data_management/data_info.yaml``.
+    clean_data = pd.DataFrame()
 
-    Args:
-        data (pandas.DataFrame): The data set.
-        data_info (dict): Information on data set stored in data_info.yaml. The
-            following keys can be accessed:
-            - 'outcome': Name of dependent variable column in data
-            - 'outcome_numerical': Name to be given to the numerical version of outcome
-            - 'columns_to_drop': Names of columns that are dropped in data cleaning step
-            - 'categorical_columns': Names of columns that are converted to categorical
-            - 'column_rename_mapping': Old and new names of columns to be renamend,
-                stored in a dictionary with design: {'old_name': 'new_name'}
-            - 'url': URL to data set
+    clean_data["Country"] = data["cntry"]
+    clean_data["Respondent_ID"] = data["idno"]
+    clean_data["ESS_Round"] = data["essround"]
+    clean_data["National_Election_Vote_First"] = data["prtvgde1"]
+    clean_data["National_Election_Vote_Second"] = data["prtvgde2"]
+    clean_data["Closest_Political_Party"] = data["prtclgde"]
+    clean_data["Closeness_to_Party"] = data["prtdgcl"]
+    clean_data["Satisfaction_Economy"] = data["stfeco"]
+    clean_data['Stance_Homosexuality'] = data["freehms"]
+    clean_data['Stance_Homosexual_Adoption'] = data["hmsfmlsh"]
+    clean_data['Stance_EU_Unification'] = data["euftf"]
+    clean_data["Stance_Same_Race_Immigration"] = data["imsmetn"]
+    clean_data["Stance_Other_Race_Immigration"] = data["imdfetn"]
+    clean_data["Stance_Immigration_Outside_Europe"] = data["impcntr"]
+    clean_data["Stance_Immigration_on_Economy"] = data["imueclt"]
+    clean_data["Stance_Culture_Life_Immigrants"] = data["imueclt"]
+    clean_data["Strength_Religiosity"] = data["rlgdgr"]
+    clean_data['Born_in_Country'] = data["brncntr"]
+    clean_data["Age"] = data["agea"]
+    clean_data["Education_Level_ES_ISCED"] = data["eisced"]
+    clean_data["Household_Total_Income"] = data["hinctnta"]
 
-    Returns:
-        pandas.DataFrame: The cleaned data set.
-
-    """
-    data = data.drop(columns=data_info["columns_to_drop"])
-    data = data.dropna()
-    for cat_col in data_info["categorical_columns"]:
-        data[cat_col] = data[cat_col].astype("category")
-    data = data.rename(columns=data_info["column_rename_mapping"])
-
-    numerical_outcome = pd.Categorical(data[data_info["outcome"]]).codes
-    data[data_info["outcome_numerical"]] = numerical_outcome
-
-    return data
+    return clean_data
