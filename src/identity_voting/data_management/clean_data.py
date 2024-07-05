@@ -11,25 +11,27 @@ def clean_raw_ess_11_data(data):
     clean_data["ESS_Round"] = data["essround"]
     clean_data["National_Election_Vote_First_Germany"] = data["prtvgde1"]
     clean_data["National_Election_Vote_Second_Germany"] = data["prtvgde2"]
-    clean_data["Closest_Political_Party_Germany"] = data["prtclgde"]
-    clean_data["Closest_Political_Party_Austria"] = data["prtcleat"]
+    clean_data["Closest_Political_Party_Germany"] = pd.to_numeric(data["prtclgde"], errors="coerce")
+    clean_data["Closest_Political_Party_Austria"] = pd.to_numeric(data["prtcleat"], errors='coerce')
+    clean_data["Closest_Political_Party_Switzerland"] = pd.to_numeric(data["prtclhch"], errors="coerce")
     clean_data["Closeness_to_Party"] = data["prtdgcl"]
     clean_data["Satisfaction_Economy"] = data["stfeco"]
-    clean_data['Stance_Homosexuality'] = data["freehms"]
-    clean_data['Stance_Homosexual_Adoption'] = data["hmsfmlsh"]
-    clean_data['Stance_EU_Unification'] = data["euftf"]
-    clean_data["Stance_Same_Race_Immigration"] = data["imsmetn"]
-    clean_data["Stance_Other_Race_Immigration"] = data["imdfetn"]
-    clean_data["Stance_Immigration_Outside_Europe"] = data["impcntr"]
-    clean_data["Stance_Immigration_on_Economy"] = data["imueclt"]
-    clean_data["Stance_Culture_Life_Immigrants"] = data["imueclt"]
-    clean_data["Strength_Religiosity"] = data["rlgdgr"]
+    clean_data['Stance_Homosexuality'] = data["freehms"].replace([7, 8, 9], pd.NA)
+    clean_data['Stance_Homosexual_Adoption'] = data["hmsfmlsh"].replace([7, 8, 9], pd.NA)
+    clean_data['Stance_EU_Unification'] = data["euftf"].replace([7, 8, 9], pd.NA)
+    clean_data["Stance_Same_Race_Immigration"] = data["imsmetn"].replace([7, 8, 9], pd.NA)
+    clean_data["Stance_Other_Race_Immigration"] = data["imdfetn"].replace([7, 8, 9], pd.NA)
+    clean_data["Stance_Immigration_Outside_Europe"] = data["impcntr"].replace([7, 8, 9], pd.NA)
+    clean_data["Stance_Immigration_on_Economy"] = data["imueclt"].replace([7, 8, 9], pd.NA)
+    clean_data["Stance_Culture_Life_Immigrants"] = data["imueclt"].replace([7, 8, 9], pd.NA)
+    clean_data["Strength_Religiosity"] = data["rlgdgr"].replace([77,88,99], pd.NA)
+    clean_data["Strength_Religiosity_Halfed"] = clean_data["Strength_Religiosity"] / 2
     clean_data['Born_in_Country'] = data["brncntr"]
-    clean_data["Age"] = data["agea"]
+    clean_data["Age"] = data["agea"].replace(999, pd.NA)
     clean_data["Education_Level_ES_ISCED"] = data["eisced"]
     clean_data["Household_Total_Income"] = data["hinctnta"]
 
-    clean_data["Closest_Political_Party_Summary"] = extract_non_na_values(clean_data[["Closest_Political_Party_Germany", "Closest_Political_Party_Austria"]])
+    clean_data["Closest_Political_Party_Summary"] = extract_non_na_values(clean_data[["Closest_Political_Party_Germany", "Closest_Political_Party_Austria",                                     "Closest_Political_Party_Switzerland"]])
     
     clean_data["Right_Wing_Indicator"] = create_right_wing_indicator(voting_codes = clean_data["Closest_Political_Party_Summary"], 
                                                                      country = clean_data["Country"])
@@ -56,9 +58,10 @@ def create_right_wing_indicator(voting_codes: pd.Series,
 
     # Define the right-wing party codes for each country
     right_wing_parties = {
-        'Germany': 7,  # AfD
-        'Austria': 3   # FPÖ
-        # Add more countries and their right-wing party codes here
+        'DE': 7,  # AfD
+        'AT': 3 ,  # FPÖ
+        'CH': 1 # SVP
+
     }
     
     # Create a DataFrame from the inputs
